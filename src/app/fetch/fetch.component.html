@@ -1,47 +1,86 @@
 <div
-  class="grid bg-black/90 h-screen overflow-y-scroll overflow-x-hidden place-content-start justify-center"
+  class="grid bg-black/90 h-screen w-full overflow-y-scroll overflow-x-hidden place-content-start justify-center"
 >
-  <div class="text-violet-400 w-full p-12 text-5xl place-content-center">
-    Github-Fetcher
+  <div
+    class="grid grid-flow-col place-content-start text-white gap-4 pt-12 items-center justify-center"
+    *ngFor="let user of getUser"
+  >
+    <img
+      [src]="user.avatarUrl"
+      alt="Avatar"
+      class="w-20 border-2 border-white rounded-full"
+    />
+    <h1>{{ user.username }}</h1>
   </div>
-  <div class="mx-12 w-full grid grid-flow-col place-content-center gap-3">
+
+  <div class="w-full mt-4 grid grid-flow-col place-content-center gap-3">
     <input
       type="text"
-      class="placeholder-white w-96 px-4 bg-violet-100 text-violet-200 h-10 rounded-xl"
+      class="placeholder-black w-96 px-4 bg-violet-200 text-slate-800 h-10 rounded-xl"
       placeholder="Enter Username"
       [(ngModel)]="username"
-      (keyup.enter)="fetchUser()"
+      (keyup.Enter)="fetchUser()"
     />
-    <button (click)="fetchUser()" class="p-2 px-4 bg-indigo-500 rounded-xl">
+    <button
+      (click)="fetchUser()"
+      class="p-2 px-4 bg-violet-400 hover:bg-violet-700 hover:text-xl transition-all rounded-xl"
+    >
       Submit
     </button>
   </div>
 
-  <div class="grid grid-cols-3 gap-4 p-12">
-    <div
-      class="border rounded-xl border-gray-200 col-span-1 p-4 grid grid-flow-row gap-4"
-      *ngFor="let repo of displayedData"
-    >
-      <div class="text-violet-400 text-2xl">{{ repo.name }}</div>
-      <div class="text-violet-200">{{ repo.description }}</div>
-      <div class="flex flex-col gap-4 flex-wrap">
-        <button
-          class="p-2 px-4 w-full bg-indigo-600 rounded-lg"
-          *ngFor="let topic of repo.topics"
-        >
-          {{ topic }}
-        </button>
-      </div>
-    </div>
+  <div *ngIf="isLoading" class="mt-4">
+    <ngx-skeleton-loader
+      class="opacity-45"
+      count="15"
+      animation="pulse"
+      appearance="line"
+      [theme]="{
+        line: 'dark',
+        pulse: 'dark',
+        wave: 'dark'
+      }"
+    />
   </div>
 
-  <div class="w-full grid-flow-col gap-4 grid place-content-center">
-    <button
-      class="p-2 px-4 w-full bg-indigo-600 rounded-lg"
-      *ngFor="let i of [].constructor(totalPages); let index = index"
-      (click)="goToPage(index + 1)"
+  <div *ngIf="!isLoading">
+    <div class="grid grid-cols-3 gap-4 p-12">
+      <div
+        class="border rounded-xl border-slate-200 col-span-1 p-4 grid grid-flow-row gap-4"
+        *ngFor="let repo of data"
+      >
+        <div class="text-white text-2xl">{{ repo.name }}</div>
+        <div class="text-slate-200">{{ repo.description }}</div>
+        <div class="flex flex-row gap-4 flex-wrap">
+          <button
+            class="p-2 bg-indigo-300 rounded-lg"
+            *ngFor="let topic of repo.topics"
+          >
+            {{ topic }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="grid place-content-center grid-flow-auto grid-cols-10 gap-4 px-8 flex-wrap"
     >
-      {{ index + 1 }}
-    </button>
+      <button
+        class="p-2 bg-indigo-300 mx-4 rounded-lg"
+        *ngFor="let pageNumber of pageNumbers"
+        (click)="goToPage(pageNumber)"
+      >
+        {{ pageNumber }}
+      </button>
+    </div>
+
+    <div class="flex justify-center my-4 gap-4" *ngIf="isSearchDone">
+      <button class="p-2 px-4 bg-indigo-300 rounded-lg" (click)="prevPage()">
+        Previous Page
+      </button>
+      <button class="p-2 px-4 bg-indigo-300 rounded-lg" (click)="nextPage()">
+        Next Page
+      </button>
+    </div>
   </div>
 </div>

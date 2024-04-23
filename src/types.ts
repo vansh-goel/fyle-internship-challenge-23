@@ -7,3 +7,8 @@ export interface Repo {
   };
   topics: string[];
 }
+
+export interface PaginatedRepoResponse {
+  data: Repo[];
+  totalPages: number;
+}
